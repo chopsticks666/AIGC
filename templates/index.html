@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <style>
+        /* 设置背景图片 */
+        body {
+            margin: 0;
+            padding: 0;
+            position: relative;
+            height: 100vh; /* 设置body高度为视窗的100% */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white; /* 设置文本颜色为白色 */
+        }
+
+        /* 添加一个覆盖整个页面的半透明背景层 */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+            z-index: -1; /* 将其放在背景图片之后 */
+        }
+
+        /* 设置背景图片 */
+        body::after {
+            content: "";
+            background-image: url('../static/background_sustech.jpg');
+            background-size: cover; /* 让背景图片铺满整个屏幕 */
+            background-position: center; /* 居中显示背景图片 */
+            opacity: 0.7; /* 背景图片透明度，使其变暗 */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2; /* 将其放在背景层之后 */
+        }
+
+        h1 {
+            margin-top: -200px; /* 移除标题默认的上外边距 */
+            font-size: 36px; /* 设置字体大小 */
+            font-weight: bold; /* 设置字体粗细 */
+            color: white; /* 设置字体颜色 */
+            margin-bottom: 20px; /* 设置下外边距 */
+        }
+
+        /* 设置内容的样式 */
+        .content {
+            position: relative;
+            z-index: 1; /* 确保内容在背景之前显示 */
+        }
+
+        /* 右上角图片样式 */
+        .top-right-image1 {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 300px; /* 设置图片宽度 */
+            height: auto; /* 让高度自适应保持比例 */
+        }
+
+        .top-right-image2 {
+            position: absolute;
+            top: 90px;
+            right: 70px;
+            width: 175px; /* 设置图片宽度 */
+            height: auto; /* 让高度自适应保持比例 */
+        }
+
+        .content button {
+            background-color: transparent; /* 设置背景透明 */
+            color: white; /* 设置字体颜色为白色 */
+            font-size: 25px; /* 设置字体大小 */
+            font-family: Arial, sans-serif; /* 设置字体 */
+            border: 2px solid white; /* 添加白色边框 */
+            cursor: pointer; /* 设置鼠标指针样式 */
+            padding: 5px 10px; /* 设置内边距 */
+            box-sizing: border-box; /* 让边框大小包含在按钮的宽度和高度内 */
+            margin-top: 40px; /* 设置按钮与上方元素的距离 */
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="content">
+    <h1 style="font-size: 60px;">AIGC for Songs</h1>
+    <!-- 添加一个简单的表单 -->
+
+    <form action="/test_page" method="get">
+        <button type="submit">Ready To Go!</button>
+    </form>
+
+    <form action="/github" method="get">
+        <button type="submit">github!</button>
+    </form>
+
+    <form action="/about_us" method="get">
+        <button type="submit">About</button>
+    </form>
+
+    <button onclick="window.location.href='https://github.com'">跳转到 GitHub</button>
+
+
+</div>
+
+<!-- 右上角图片 -->
+<img src="../static/xiaohui.png" alt="这个是校徽" class="top-right-image1">
+<img src="../static/iMed.png" alt="这个是校徽" class="top-right-image2">
+
+</body>
+</html>
