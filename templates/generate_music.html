@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Generator</title>
+  <link rel="stylesheet" href="generate_music.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Music Generator</h1>
+    <p>Enter your prompt and upload an audio file to generate music.</p>
+    <form id="musicForm">
+      <div class="form-group">
+        <label for="prompt">Prompt:</label>
+        <input type="text" id="prompt" name="prompt" required>
+      </div>
+      <div class="form-group">
+        <label for="audioFile">Upload Audio File:</label>
+        <input type="file" id="audioFile" name="audio" accept="audio/*" required>
+      </div>
+      <button type="submit">Generate</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('musicForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      var audioFile = document.getElementById('audioFile').files[0];
+      var prompt = document.getElementById('prompt').value;
+
+      var formData = new FormData();
+      formData.append('audio', audioFile);
+      formData.append('prompt', prompt);
+
+      fetch('/generate_music', {
+        method: 'POST',
+        body: formData
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          var url = window.URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'generated_music.wav';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while generating music.');
+        });
+    });
+  </script>
+</body>
+</html>
