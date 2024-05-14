@@ -5,8 +5,14 @@
 Notes: pytorch 2.1.0 cuda 12.1
 
 ```python
-## 创建aigc环境
+## 创建aigc环境 
+# Linux and windows
 conda create -n aigc python=3.10 pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=12.1 -c pytorch -c nvidia
+
+# Macos
+conda create -n aigc python=3.10
+pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0
+
 
 # 进入环境
 conda activate aigc
