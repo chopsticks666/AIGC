@@ -44,16 +44,33 @@ def music_path():
 
 @app.route('/generate_music', methods=['POST'])
 def generate_music():
-    if 'audio' not in request.files or 'prompt' not in request.form:
-        return jsonify({'error': 'Audio file and prompt are required.'}), 400
+    if 'audio' not in request.files and  'prompt' not in request.form:
+        return jsonify({'error': 'Audio file or prompt are required.'}), 400
 
-    audio_file = request.files['audio']
+    if 'audio' not in request.files:
+        audio_file = None
+    else:
+        audio_file = request.files['audio']
     prompt = request.form['prompt']
 
-    output_filename = music_generator.generate_music(audio_file, prompt)
+    output_filename = music_generator.generate_music(prompt, audio_file)
 
     return send_file(output_filename, mimetype='audio/wav')
 
+@app.route('/load_model')
+def load_model():
+    model_id = request.args.get('model')
+    if not model_id:
+        return jsonify({'error': 'Model ID is required as a parameter.', 'status': 'error'}), 400
+    
+    try:
+        print(f"Loading model with ID: {model_id}")
+        music_generator.change_to_model(model_id=int(model_id))
+        return jsonify({'message': f'Model {model_id} loaded successfully.', 'status': 'loaded'}), 200
+    except Exception as e:
+        print(f"Failed to load model {model_id}: {str(e)}")
+        return jsonify({'error': f'Failed to load model {model_id}.', 'status': 'error'}), 500
+    
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

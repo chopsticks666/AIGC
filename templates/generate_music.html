@@ -4,60 +4,282 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Music Generator</title>
-  <link rel="stylesheet" href="generate_music.css">
+  <style>
+            /* 设置背景图片 */
+            body {
+            margin: 0;
+            padding: 0;
+            position: relative;
+            height: 100vh; /* 设置body高度为视窗的100% */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            text-align: center;
+            color: white; /* 设置文本颜色为白色 */
+        }
+
+        /* 添加一个覆盖整个页面的半透明背景层 */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+            z-index: -1; /* 将其放在背景图片之后 */
+        }
+
+        /* 设置背景图片 */
+        body::after {
+            content: "";
+            background-image: url('../static/background_sustech.jpg');
+            background-position: center; /* 居中显示背景图片 */
+            opacity: 0.7; /* 背景图片透明度，使其变暗 */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2; /* 将其放在背景层之后 */
+            background-repeat: repeat; 
+            background-size: initial; 
+        }
+        h1{
+          margin-top: 20px;
+        }
+
+        .musicForm {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-right: 10px;
+        }
+
+        .button, .input, .select {
+            padding: 8px;
+            margin: 2px;
+        }
+
+        .audioPlayer {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .musicGeneratorContainer {
+            margin-top: 20px;  /* 每个容器的顶部间距 */
+            margin-bottom: 20px; /* 每个容器的底部间距 */
+            background: rgba(255, 255, 255, 0.1); /* 可选：增加背景色以视觉上区分各个容器 */
+            padding: 15px; /* 容器内部的填充，使内容不至于太靠近边缘 */
+            border-radius: 8px; /* 可选：为容器添加圆角 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 可选：为容器添加阴影以增强立体感 */
+        }
+
+        .container {
+            width: 90%; /* 调整容器宽度，确保它不会过于宽大 */
+            max-width: 960px; /* 最大宽度限制，适用于大屏幕 */
+        }
+
+
+
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Music Generator</h1>
-    <p>Enter your prompt and upload an audio file to generate music.</p>
-    <form id="musicForm">
-      <div class="form-group">
-        <label for="prompt">Prompt:</label>
-        <input type="text" id="prompt" name="prompt" required>
+      <p>Enter your prompt and upload an audio file to generate music.</p>
+      <div>Current Model: <span id="currentModel" class="currentModel">facebook/musicgen-small</span></div>
+      <button onclick="addMusicGenerator()" class="addMusicGenerator">Add Music Generator</button>
+      <div id="musicGeneratorContainer" class="musicGeneratorContainer">
+          <form id="musicForm" class="musicForm">
+              <div class="form-group">
+                  <label for="modelSelect">Select Model:</label>
+                  <select id="modelSelect" class="modelSelect" name="model">
+                      <option value="1">musicgen-small</option>
+                      <option value="2">musicgen-medium</option>
+                      <option value="3">musicgen-large</option>
+                      <option value="4">musicgen-melody</option>
+                      <option value="5">musicgen-melody-large</option>
+                  </select>
+              </div>
+              <div class="form-group">
+                  <label for="prompt">Prompt:</label>
+                  <input type="text" id="prompt" class="prompt" name="prompt" required>
+              </div>
+              <div class="form-group">
+                  <label for="audioFile">Upload Audio File:</label>
+                  <input type="file" id="audioFile" class="audioFile" name="audio" accept="audio/*">
+              </div>
+              <button type="submit" id="generateButton" class="generateButton">Generate</button>
+              <button class="removeButton">Remove</button>
+          </form>
+          <audio id="audioPlayer" class="audioPlayer" controls></audio>
       </div>
-      <div class="form-group">
-        <label for="audioFile">Upload Audio File:</label>
-        <input type="file" id="audioFile" name="audio" accept="audio/*" required>
-      </div>
-      <button type="submit">Generate</button>
-    </form>
   </div>
 
-  <script>
-    document.getElementById('musicForm').addEventListener('submit', function(e) {
-      e.preventDefault();
 
-      var audioFile = document.getElementById('audioFile').files[0];
-      var prompt = document.getElementById('prompt').value;
+ <script>
+    var generatorCount = 0; // 用于跟踪生成器的数量并创建唯一的ID
+    var model_name = "facebook/musicgen-small"
+    let model_map = new Map()
+    model_map.set('1', 'facebook/musicgen-small')
+    model_map.set('2', 'facebook/musicgen-medium')
+    model_map.set('3', 'facebook/musicgen-large')
+    model_map.set('4', 'facebook/musicgen-melody')
+    model_map.set('5', 'facebook/musicgen-melody-large')
 
-      var formData = new FormData();
-      formData.append('audio', audioFile);
-      formData.append('prompt', prompt);
+    function updateModelDisplay(newModelName) {
+      document.getElementById('currentModel').textContent = newModelName;
+    }
 
-      fetch('/generate_music', {
-        method: 'POST',
-        body: formData
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.blob();
-        })
-        .then(blob => {
-          var url = window.URL.createObjectURL(blob);
-          var a = document.createElement('a');
-          a.href = url;
-          a.download = 'generated_music.wav';
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('An error occurred while generating music.');
+    function init() {
+      // Bind event listeners to the initial form and elements
+      var formId = 'musicForm';
+      var selectId = 'modelSelect';
+      var audioId = 'audioFile';
+      var buttonId = 'generateButton';
+      addEventListeners(buttonId, formId, selectId, audioId);
+    }
+
+    function addMusicGenerator() {
+        generatorCount++; // 增加计数器
+        var originalContainer = document.getElementById('musicGeneratorContainer');
+        var clone = originalContainer.cloneNode(true); // 创建一个深度复制
+
+        // 更新容器ID
+        clone.id = 'musicGeneratorContainer' + generatorCount;
+
+        // 更新表单的 ID 并添加类
+        var form = clone.querySelector('#musicForm');
+        form.id = 'musicForm' + generatorCount;
+        form.className = 'musicForm'; // 添加类
+
+        // 更新模型选择的 ID 并添加类
+        var modelSelect = clone.querySelector('#modelSelect');
+        modelSelect.id = 'modelSelect' + generatorCount;
+        modelSelect.className = 'modelSelect'; // 添加类
+
+        // 更新提示输入的 ID 并添加类
+        var promptInput = clone.querySelector('#prompt');
+        promptInput.id = 'prompt' + generatorCount;
+        promptInput.className = 'prompt'; // 添加类
+
+        // 更新音频文件输入的 ID 并添加类
+        var audioInput = clone.querySelector('#audioFile');
+        audioInput.id = 'audioFile' + generatorCount;
+        audioInput.className = 'audioFile'; // 添加类
+
+        // 更新生成按钮的 ID 并添加类
+        var generateButton = clone.querySelector('#generateButton');
+        generateButton.id = 'generateButton' + generatorCount;
+        generateButton.className = 'generateButton'; // 添加类
+
+        // 更新移除按钮并添加事件处理
+        var removeButton = clone.querySelector('.removeButton');
+        removeButton.className = 'removeButton'; // 确保类名一致
+        removeButton.onclick = function() { clone.remove(); }; // 添加删除事件
+
+        // 更新音频播放器的 ID 并添加类
+        var audioPlayer = clone.querySelector('#audioPlayer');
+        audioPlayer.id = 'audioPlayer' + generatorCount;
+        audioPlayer.className = 'audioPlayer'; // 添加类
+
+        // 确保克隆的容器也有 'container' 类
+        clone.classList.add('container');
+
+        clone.classList.add('musicGeneratorContainer'); // 确保克隆的元素也有 'musicGeneratorContainer' 类
+
+
+        // 添加到页面中
+        document.body.appendChild(clone);
+
+        // 为新的元素添加事件监听器
+        addEventListeners(generateButton.id, form.id, modelSelect.id, audioInput.id);
+    }
+
+
+
+    function addEventListeners(buttonId, formId, selectId, audioId) {
+        var id = '';
+
+        if (generatorCount>0){
+          id = generatorCount;
+        }
+        document.getElementById(selectId).addEventListener('change', function(e) {
+            var model = e.target.value;
+            var generateButton = document.getElementById(buttonId);
+            generateButton.disabled = true;  // Disable the button
+            var newModelName = model_map.get(model);
+            updateModelDisplay(newModelName); // Update the display when model changes
+
+            fetch(`/load_model?model=${model}`)
+              .then(response => response.json())
+              .then(data => {
+                if (data.status === 'loaded') {
+                  generateButton.disabled = false;  // Enable the button
+                } else {
+                  alert('Failed to load model: ' + data.error);
+                  console.error('Error:', data.error);
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load model.');
+              });
         });
-    });
-  </script>
+
+        document.getElementById(formId).addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          var audioFile = document.getElementById(audioId).files[0];
+          var promptInput = document.getElementById(formId).querySelector('#prompt'+id);
+          var prompt = promptInput.value;
+
+          var formData = new FormData();
+          if (audioFile) {
+            formData.append('audio', audioFile);
+          }
+          formData.append('prompt', prompt);
+          console.log(prompt);
+
+          fetch('/generate_music', {
+            method: 'POST',
+            body: formData
+          })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.blob();
+            })
+            .then(blob => {
+              var url = window.URL.createObjectURL(blob);
+              var audioPlayer = document.getElementById('audioPlayer' + id);
+              audioPlayer.src = url;
+              audioPlayer.play();
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert('An error occurred while generating music.');
+            });
+        });
+    }
+
+    window.onload = init; // Call init when the page loads
+</script>
+
+
 </body>
 </html>
+
+
+
+
