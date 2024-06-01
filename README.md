@@ -30,6 +30,9 @@ python frontend.py
 
 ## demo
 
+查看演示视频: [demo_video.mp4](demo.mp4)
+
+
 https://www.youtube.com/watch?v=A6X2xryjQfE
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/A6X2xryjQfE" title="demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
