@@ -28,12 +28,10 @@ python frontend.py
 ```
 
 
-## Continuing
-
-1. 用户根据自己的需求选择模型
+## demo
 
 
-2. 模型本地存储
-
-
-
+<video width="560" height="315" controls>
+  <source src="https://github.com/chopsticks666/AIGC/raw/main/demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
