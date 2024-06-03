@@ -1,5 +1,36 @@
 # AIGC for Songs
 多媒体课程project
+
+## 代码结构
+
+├── backend
+│   ├── __pycache__
+│   ├── models
+│   │   ├── __init__.py
+│   │   ├── model.py
+│   ├── utils.py
+├── static
+│   ├── background_sustech.jpg
+│   ├── campus_scenery.jpg
+│   ├── iMed_background.png
+│   ├── iMed.png
+│   ├── xiaohui.png
+├── templates
+│   ├── about_us.html
+│   ├── generate_music.css
+│   ├── generate_music.html
+│   ├── github.html
+│   ├── index.html
+│   ├── result.html
+│   ├── test_page.html
+├── frontend.py
+├── generated_music.wav
+├── image copy 2.png
+├── image copy.png
+├── image.png
+├── README.md
+└── web.config
+
 ## 环境搭建
 
 Notes: pytorch 2.1.0 cuda 12.1
@@ -31,13 +62,4 @@ python frontend.py
 ## demo
 
 查看演示视频: [demo_video.mp4](demo.mp4)
-
-
-https://www.youtube.com/watch?v=A6X2xryjQfE
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/A6X2xryjQfE" title="demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/A6X2xryjQfE?si=9NVosl2RbzjVH9pd" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
 
